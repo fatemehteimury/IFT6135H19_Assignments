@@ -1,4 +1,4 @@
-NOTE: Due to GitHub file size limits, Git LFS (https://git-lfs.github.com/) is required to download checkpoint / data files
+***NOTE***: Due to GitHub file size limits, Git LFS (https://git-lfs.github.com/) is required to download checkpoint / data files... If Git LFS is installed after you clone the repository, you must delete the original clone and reclone the repository. 
 
 Install:
 pip install -r requirements.txt
