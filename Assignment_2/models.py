@@ -74,9 +74,9 @@ class RNNLinearCell(nn.Module):
 
     h = self.tanh(self.Wh(hidden) + self.Wx(inp)) # h = tanh(Wx*inp + Wh*hidden + bh)
     
-    #y = self.dropout(self.Wy(hidden))             # y = dropout(Wy*hidden + by)
-    y = self.Wy(self.dropout(hidden))             # y = Wy*dropout(hidden) + by    
-    
+    y = self.dropout(self.Wy(hidden))             # y = dropout(Wy*hidden + by)
+    #y = self.Wy(self.dropout(hidden))             # y = Wy*dropout(hidden) + by    
+    #y = self.dropout(hidden)
     return y, h
 
 
@@ -131,6 +131,8 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
                                 dropout_keep_rate = self.dp_keep_prob if i!= self.num_layers else 1.0
                                       ))
     
+    #self.Wy = nn.Linear(hidden_size, vocab_size)
+    
     self.init_weights_uniform()
     
     
@@ -147,6 +149,9 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
     
     for cell in self.model:
       cell.apply(self.init_weights)
+
+    #torch.nn.init.uniform_(self.Wy.weight, -0.1, 0.1)  
+    #torch.nn.init.zeros_(self.Wy.bias)  
  
     
   def init_hidden(self):
@@ -199,20 +204,19 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
     assert len(self.model) == self.num_layers
     
     logits = torch.zeros([self.seq_len, self.batch_size, self.vocab_size], dtype=hidden.dtype, device=hidden.device)
-    hidden_t = torch.zeros([self.num_layers, self.batch_size, self.hidden_size], dtype=hidden.dtype, device=hidden.device)
 
     embs = self.embedding(inputs) # shape: (self.seq_len, self.batch_size, self.emb_size)
     
     for i in range(self.seq_len):
       for j in range(self.num_layers):
         inp = embs[i] if j==0 else outp
-        hid = hidden[j] if i==0 else hidden_t[j]
-
-        outp, hidden_t[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
+        hid = hidden[j]
+        outp, hidden[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
 
       logits[i] = outp  
+      #logits[i] = self.Wy(outp)  
 
-    return logits.view(self.seq_len, self.batch_size, self.vocab_size), hidden_t
+    return logits.view(self.seq_len, self.batch_size, self.vocab_size), hidden
 
   
   def generate(self, inputs, hidden, generated_seq_len):
@@ -241,16 +245,14 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
                     shape: (generated_seq_len, batch_size)
     """
     samples = torch.zeros([generated_seq_len, self.batch_size], dtype=hidden.dtype, device=hidden.device)
-    hidden_t = torch.zeros([self.num_layers, self.batch_size, self.hidden_size], dtype=hidden.dtype, device=hidden.device)
     
     init_emb = self.embedding(inputs) # shape: (self.batch_size, self.emb_size)
     
     for i in range(generated_seq_len):
       for j in range(self.num_layers):
         inp = init_embs if (i==0 and j==0) else outp
-        hid = hidden[j] if i==0 else hidden_t[j]
-
-        outp, hidden_t[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
+        hid = hidden[j]
+        outp, hidden[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
 
       outp = torch.softmax(outp, axis=1) # shape (self.batch_size, self.vocab_size)
       outp = torch.max(outp, axis=1)[1]  # shape (self.batch_size)
@@ -310,9 +312,10 @@ class GRULinearCell(nn.Module):
     
     h  = ((1-z)*hidden) + (z*th)                      # h  = (1-z).hidden + z.th
 
-    #y  = self.dropout(self.Wy(h))                     # y = dropout(Wy*hidden + by)
-    y  = self.Wy(self.dropout(h))                     # y = Wy*dropout(hidden) + by
-
+    y  = self.dropout(self.Wy(h))                     # y = dropout(Wy*hidden + by)
+    #y  = self.Wy(self.dropout(h))                     # y = Wy*dropout(hidden) + by
+    #y = self.dropout(h)
+    
     return y, h
 
 
@@ -370,6 +373,8 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
                                 output_size = self.hidden_size if i != self.num_layers else self.vocab_size,
                                 dropout_keep_rate = self.dp_keep_prob if i!= self.num_layers else 1.0
                                  ))
+
+    #self.Wy = nn.Linear(hidden_size, vocab_size)
     
     self.init_weights_uniform()
 
@@ -386,6 +391,9 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
     
     for cell in self.model:
       cell.apply(self.init_weights)
+
+    #torch.nn.init.uniform_(self.Wy.weight, -0.1, 0.1)  
+    #torch.nn.init.zeros_(self.Wy.bias)  
 
           
   def init_hidden(self):
@@ -437,20 +445,19 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
     assert len(self.model) == self.num_layers
     
     logits = torch.zeros([self.seq_len, self.batch_size, self.vocab_size], dtype=hidden.dtype, device=hidden.device)
-    hidden_t = torch.zeros([self.num_layers, self.batch_size, self.hidden_size], dtype=hidden.dtype, device=hidden.device)
 
     embs = self.embedding(inputs) # shape: (self.seq_len, self.batch_size, self.emb_size)
     
     for i in range(self.seq_len):
       for j in range(self.num_layers):
         inp = embs[i] if j==0 else outp
-        hid = hidden[j] if i==0 else hidden_t[j]
-
-        outp, hidden_t[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
+        hid = hidden[j]
+        outp, hidden[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
 
       logits[i] = outp  
+      #logits[i] = self.Wy(outp)  
 
-    return logits.view(self.seq_len, self.batch_size, self.vocab_size), hidden_t
+    return logits.view(self.seq_len, self.batch_size, self.vocab_size), hidden
 
   
   def generate(self, inputs, hidden, generated_seq_len):
@@ -479,16 +486,14 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
                     shape: (generated_seq_len, batch_size)
     """
     samples = torch.zeros([generated_seq_len, self.batch_size], dtype=hidden.dtype, device=hidden.device)
-    hidden_t = torch.zeros([self.num_layers, self.batch_size, self.hidden_size], dtype=hidden.dtype, device=hidden.device)
     
     init_emb = self.embedding(inputs) # shape: (self.batch_size, self.emb_size)
     
     for i in range(generated_seq_len):
       for j in range(self.num_layers):
         inp = init_embs if (i==0 and j==0) else outp
-        hid = hidden[j] if i==0 else hidden_t[j]
-
-        outp, hidden_t[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
+        hid = hidden[j]
+        outp, hidden[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
 
       outp = torch.softmax(outp, axis=1) # shape (self.batch_size, self.vocab_size)
       outp = torch.max(outp, axis=1)[1]  # shape (self.batch_size)

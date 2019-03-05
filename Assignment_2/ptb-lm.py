@@ -322,6 +322,12 @@ else:
 
 model.to(device)
 
+total_params = sum(p.numel() for p in model.parameters())
+print("===> Total Model Parameters: ", total_params)
+
+with open (os.path.join(experiment_path,'exp_config.txt'), 'a') as f:
+	f.write('Total Model Parameters:'+'    '+str(total_params)+'\n')
+
 # LOSS FUNCTION
 loss_fn = nn.CrossEntropyLoss()
 if args.optimizer == 'ADAM':
@@ -369,7 +375,6 @@ def run_epoch(model, data, is_train=False, lr=1.0):
     start_time = time.time()
     if args.model != 'TRANSFORMER':
         hidden = model.init_hidden()
-        # hidden.to(device)
         hidden = hidden.to(device)
     costs = 0.0
     iters = 0
