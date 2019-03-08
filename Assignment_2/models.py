@@ -243,10 +243,11 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
     samples = torch.zeros([generated_seq_len, self.batch_size], dtype=hidden.dtype, device=hidden.device)
 
     init_emb = self.embedding(inputs) # shape: (self.batch_size, self.emb_size)
+    outp = self.inp_dp(init_emb)
 
     for i in range(generated_seq_len):
       for j in range(self.num_layers):
-        inp = init_embs if (i==0 and j==0) else outp
+        inp = self.inp_dp(outp) if j==0 else outp
         hid = hidden[j]
         outp, hidden[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
 
@@ -479,21 +480,21 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
     samples = torch.zeros([generated_seq_len, self.batch_size], dtype=hidden.dtype, device=hidden.device)
 
     init_emb = self.embedding(inputs) # shape: (self.batch_size, self.emb_size)
+    outp = self.inp_dp(init_emb)
 
     for i in range(generated_seq_len):
       for j in range(self.num_layers):
-        inp = init_embs if (i==0 and j==0) else outp
+        inp = self.inp_dp(outp) if j==0 else outp
         hid = hidden[j]
         outp, hidden[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
 
-      outp = self.Wy(outp)               # shape (self.batch_size, self.vocab_size)
+      outp = self.Wy(outp) 
       outp = torch.softmax(outp, axis=1) # shape (self.batch_size, self.vocab_size)
       outp = torch.max(outp, axis=1)[1]  # shape (self.batch_size)
       samples[i] = outp                  # store generated samples
       outp = self.embedding(outp)        # convert sample into embedding as next input
 
     return samples
-
 
 ##############################################################################
 # Problem 3
