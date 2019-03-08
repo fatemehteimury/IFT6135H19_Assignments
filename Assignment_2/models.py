@@ -572,9 +572,9 @@ class SingleAttentionHead(nn.Module):
     self.n_units = n_units
     self.d_k = d_k
 
-    self.W_Q = nn.Linear(self.n_units, self.d_k, bias=False)
-    self.W_K = nn.Linear(self.n_units, self.d_k, bias=False)
-    self.W_V = nn.Linear(self.n_units, self.d_k, bias=False)
+    self.W_Q = nn.Linear(self.n_units, self.d_k)
+    self.W_K = nn.Linear(self.n_units, self.d_k)
+    self.W_V = nn.Linear(self.n_units, self.d_k)
 
     self.dropout = nn.Dropout(dropout_value)
 
@@ -643,7 +643,7 @@ class MultiHeadedAttention(nn.Module):
 
         self.heads = clones(SingleAttentionHead(self.n_units, self.d_k, dropout), self.n_heads) # make n_heads with n_units and d_k
 
-        self.W_O = nn.Linear(self.n_units, self.n_units, bias=False) # do final projection to n_units
+        self.W_O = nn.Linear(self.n_units, self.n_units) # do final projection to n_units
 
         # TODO: create/initialize any necessary parameters or layers
         # Initialize all weights and biases uniformly in the range [-k, k],
@@ -667,6 +667,7 @@ class MultiHeadedAttention(nn.Module):
                         torch.nn.init.zeros_(m.bias)
 
         torch.nn.init.uniform_(self.W_O.weight, -math.sqrt(1/self.n_units), math.sqrt(1/self.n_units))
+        torch.nn.init.zeros_(self.W_O.bias)
 
 
     def forward(self, query, key, value, mask=None):
