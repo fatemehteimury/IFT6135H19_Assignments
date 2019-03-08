@@ -145,7 +145,7 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
         if type(m) == nn.Linear:
           torch.nn.init.uniform_(m.weight, -math.sqrt(1/self.hidden_size), math.sqrt(1/self.hidden_size))
           if m.bias is not None:
-            torch.nn.init.zeros_(m.bias)
+            torch.nn.init.uniform_(m.bias, -math.sqrt(1/self.hidden_size), math.sqrt(1/self.hidden_size))
 
     torch.nn.init.uniform_(self.embedding.weight,-0.1,0.1)
     torch.nn.init.uniform_(self.Wy.weight,-0.1,0.1)
@@ -383,7 +383,7 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
         if type(m) == nn.Linear:
           torch.nn.init.uniform_(m.weight, -math.sqrt(1/self.hidden_size), math.sqrt(1/self.hidden_size))
           if m.bias is not None:
-            torch.nn.init.zeros_(m.bias)
+            torch.nn.init.uniform_(m.bias, -math.sqrt(1/self.hidden_size), math.sqrt(1/self.hidden_size))
 
     torch.nn.init.uniform_(self.embedding.weight,-0.1,0.1)
     torch.nn.init.uniform_(self.Wy.weight,-0.1,0.1)
