@@ -1,5 +1,7 @@
 
 # 4.1 and 4.2
+# saved model parameters for 4_1 can be found here:
+# https://drive.google.com/open?id=1EAvn6wWkGbBu8M4y1DzVGhjJ9NnM-6M9
 
 -------------------------------------------------------------------------------------------------
  Model      | Optimizer    | Train PPL        | Min Val PPL | Observation                       
