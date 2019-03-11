@@ -657,18 +657,17 @@ class MultiHeadedAttention(nn.Module):
 
     def init_weights(self):
         # TODO ========================
-        # Initialize all the weights uniformly in the range [-1/sqrt(n_units), 1/sqrt(n_units)]
-        # and all the biases to 0 (in place)
+        # Initialize all the weights abd biases uniformly in the range [-1/sqrt(n_units), 1/sqrt(n_units)]
 
         for head in self.heads:
             for m in head.modules():
                 if type(m) == nn.Linear:
                     torch.nn.init.uniform_(m.weight, -math.sqrt(1/self.n_units), math.sqrt(1/self.n_units))
                     if m.bias is not None:
-                        torch.nn.init.zeros_(m.bias)
+                        torch.nn.init.uniform_(m.bias, -math.sqrt(1/self.n_units), math.sqrt(1/self.n_units))
 
         torch.nn.init.uniform_(self.W_O.weight, -math.sqrt(1/self.n_units), math.sqrt(1/self.n_units))
-        torch.nn.init.zeros_(self.W_O.bias)
+        torch.nn.init.uniform_(self.W_O.bias, -math.sqrt(1/self.n_units), math.sqrt(1/self.n_units))
 
 
     def forward(self, query, key, value, mask=None):

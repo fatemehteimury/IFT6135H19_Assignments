@@ -254,7 +254,7 @@ def ptb_iterator(raw_data, batch_size, num_steps):
 
 class Batch:
     "Data processing for the transformer. This class adds a mask to the data."
-    def __init__(self, x, pad=0):
+    def __init__(self, x, pad=-1):
         self.data = x
         self.mask = self.make_mask(self.data, pad)
 
@@ -423,6 +423,49 @@ def run_epoch(model, data, is_train=False, lr=1.0):
     return np.exp(costs / iters), losses
 
 
+def run_epoch_valid(model, data, lr=1.0):
+    """
+    One epoch of validation.
+    """
+    model.eval()
+
+    epoch_size = ((len(data) // model.batch_size) - 1) // model.seq_len
+    start_time = time.time()
+    if args.model != 'TRANSFORMER':
+        hidden = model.init_hidden()
+        hidden = hidden.to(device)
+    costs = 0.0
+    iters = 0
+    losses = []
+
+    with torch.no_grad():
+        # LOOP THROUGH MINIBATCHES
+        for step, (x, y) in enumerate(ptb_iterator(data, model.batch_size, model.seq_len)):
+            if args.model == 'TRANSFORMER':
+                batch = Batch(torch.from_numpy(x).long().to(device))
+                model.zero_grad()
+                outputs = model.forward(batch.data, batch.mask).transpose(1,0)
+                #print ("outputs.shape", outputs.shape)
+            else:
+                inputs = torch.from_numpy(x.astype(np.int64)).transpose(0, 1).contiguous().to(device)#.cuda()
+                model.zero_grad()
+                hidden = repackage_hidden(hidden)
+                outputs, hidden = model(inputs, hidden)
+
+            targets = torch.from_numpy(y.astype(np.int64)).transpose(0, 1).contiguous().to(device)#.cuda()
+            tt = torch.squeeze(targets.view(-1, model.batch_size * model.seq_len))
+
+            # LOSS COMPUTATION
+            # This line currently averages across all the sequences in a mini-batch
+            # and all time-steps of the sequences.
+            # For problem 5.3, you will (instead) need to compute the average loss
+            #at each time-step separately.
+            loss = loss_fn(outputs.contiguous().view(-1, model.vocab_size), tt)
+            costs += loss.data.item() * model.seq_len
+            losses.append(costs)
+            iters += model.seq_len
+
+        return np.exp(costs / iters), losses
 
 ###############################################################################
 #
@@ -456,7 +499,7 @@ for epoch in range(num_epochs):
     train_ppl, train_loss = run_epoch(model, train_data, True, lr)
 
     # RUN MODEL ON VALIDATION DATA
-    val_ppl, val_loss = run_epoch(model, valid_data)
+    val_ppl, val_loss = run_epoch_valid(model, valid_data)
 
 
     # SAVE MODEL IF IT'S THE BEST SO FAR
