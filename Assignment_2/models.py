@@ -253,7 +253,7 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
         outp, hidden[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
 
       outp = self.Wy(outp) 
-      outp = torch.softmax(outp, axis=1)      # shape (self.batch_size, self.vocab_size)
+      outp = F.softmax(outp, axis=1)      # shape (self.batch_size, self.vocab_size)
       #outp = torch.max(outp, axis=1)[1]       # shape (self.batch_size)
       outp = Categorical(probs=outp).sample() # shape (self.batch_size)
       samples[i] = outp                       # store generated samples
@@ -491,7 +491,7 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
         outp, hidden[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
 
       outp = self.Wy(outp) 
-      outp = torch.softmax(outp, axis=1)      # shape (self.batch_size, self.vocab_size)
+      outp = F.softmax(outp, axis=1)      # shape (self.batch_size, self.vocab_size)
       #outp = torch.max(outp, axis=1)[1]       # shape (self.batch_size)
       outp = Categorical(probs=outp).sample() # shape (self.batch_size)
       samples[i] = outp                       # store generated samples
