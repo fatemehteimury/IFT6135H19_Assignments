@@ -1,0 +1,89 @@
+RNN (--seq_len=35):
+Sample 1: for mr. darman 's position he said that may can produce its recovery ranks shares michael johnson had paid his duties bid under its level later <unk> last week 's offer at the department-store president 
+
+Sample 2: real estate and consumer buyers would be goodson on the european process plans to play down in the past two billion and since N when the year-earlier rate by government below $ N billion to 
+
+Sample 3: price <unk> and <unk> <unk> are signed by providing prudential-bache assistance and set at a subscriber them and distributors of french <unk> <unk> now which as negative engineering service <unk> physics $ N is suspended
+
+Sample 4: possible with society that it will earn nearly $ N million or $ N a share for the sale of one of wholesale over-the-counter yesterday causing as many of two businesses made by the <unk>
+
+Sample 5: at the end of to canada with in american airlines ' assets insurance mr. stevens for bell <unk> who sent <unk> office of <unk> brokerage business from its osha bid to N nearly $ N 
+
+Sample 6: the brokerage firm and <unk> which will provide the future of the secondary market their firm earnings for the first quarter became convertible expense released for everyone brothers will settle a retirement of what with 
+
+Sample 7: announced court in new york oil market after it blamed further a N coupon at N and in the month says home the company that the swap in bancorp rose $ N to a gain 
+
+Sample 8: support but mr. hahn said <unk> changing the first <unk> of the unit of <unk> prices as for the largest economy has been sellers are n't a problem for the agricultural market to buy shares 
+
+Sample 9: rates and one or a be <unk> about N and do increased competition for mr. <unk> says that participating it suggests how losses will still like our banking stock exchange into a type of about 
+
+Sample 10: negotiations said the company is the world 's second-largest trade concern said james a. white vice president and chief executive officer of the <unk> an ousted by the strike <unk> singapore 's nfl producer director 
+
+#######################################################################
+
+RNN (--seq_len=70):
+Sample 1: since the first nine months this month the company 's paris on the december for individuals with more cost time prices were bought at the end of and then are <unk> in a mood customers will be pushed from large the federal reserve which 's board in july intended to keep a different <unk> under the illegal year by the bank already sold to $ N million <unk> mail subsidiary 
+
+Sample 2: suffered lower evidence of paper some were higher huge of weakness in market and for weakness while the dollar may not strong as much as market contracts overnight hit nearly five analysts who recorded two recorded issues in the year-earlier period since N N marks rose N point or N N earlier u.s. exports and a dollar expected sales report revenue from N N to the total rate of its 
+
+Sample 3: meeting and the new business as profits for the nfl purchase is lifted the tax public would works by <unk> <unk> by ways and can be sold material in cash and is not to sell them <unk> <unk> movie this akzo resigned as <unk> a <unk> well of the rice or <unk> school school even last year to be done at the <unk> generation of personal illness and <unk> vehicles 
+
+Sample 4: recorder is largely in building over a small and the dollar coverage thursday said was in the <unk> of paper it has a lower trail of the stevens in the move and the nfl company 's appears to be between france or <unk> coatings and its operating <unk> plant in the business on revenue because the luxury auto maker whose telesis unit will make the sales of prudential produce loss 
+
+Sample 5: for either of that some modernize data <unk> the ways pact prepares to rely for a legal sell-off said and could cover patent fans and it taken more right to real letters of <unk> trying to become a ambitious source of over for a year and <unk> <unk> flew into a local house against the golden first white house aide to association on the aggressive visit the changing the growing 
+
+Sample 6: subject to change its dangers <unk> advertisers in an <unk> fans in the design and is <unk> in a dean witter <unk> <unk> mr. <unk> does n't have been popular good top <unk> to wright 's influence for a $ N a share up the year of the eligible for bankruptcy company will achieve $ N million or N in its fiscal year in the year-earlier month its year-ago total 
+
+Sample 7: as the prevent that could be banned the kind of smaller than the performance of the loan backing a computers prevented him of the netherlands or N N the next year within an particularly <unk> jan. N but the profit guarantees is such as even fairly <unk> in the u.s. banning interests in tourism this year resulting of 's total language on the first section of N billion yen a 
+
+Sample 8: if the good market slip in it adapted to take the producing a event according to a senior vice president and sold more overhead conceded for columbia the first half of the board <unk> time to N N acceptance inc. $ N million since june N N N N in N near the city in exchange premiere at and the meeting in late monday is closed at $ N down 
+
+Sample 9: of vehicle based on the volume of the <unk> that it is subject to measures the cost several banks also decided to drag cooperation in the connection that <unk> in a businessman <unk> is currently <unk> finance for chancery commission to so far a company 's area to sell off about N N annually for the nine months he wo n't be <unk> by gas or an additional biggest top 
+
+Sample 10: out was a far more than any troubled employee experience it the two movies is to retail customers who would raise income profit from N tons in a oklahoma date sell billion increased federal spending and scheduled to finish on care of an earlier on the week said it will waive the N to N some internal energy transport and its current licenses business to sizable sales of the targets 
+
+#######################################################################
+
+GRU (--seq_len=35):
+Sample 1: new york stock exchange trying to head with <unk> controllers and <unk> suppliers late in oct. N bank alleged investors to acquire baring 's holdings stock price as offered by a bankruptcy breaker columbia of 
+
+Sample 2: israel of a single doldrums where the industry is president and chief operating officer and creation of its attitude business the system to wholesale natural gas and gas and gas businesses de <unk> and an 
+
+Sample 3: and a large investor for the u.s. dollar out double this year the main drop 's N acres in the country which also has been able to repay a good share of their operating subsidiaries 
+
+Sample 4: the best question 's which <unk> retailing risks and projected taxes to choose to <unk> N in a mother from texas 's containing zenith 's <unk> interests and wire local advertisers products they probably gives 
+
+Sample 5: buy at sept. N down $ N to $ N a share for each time that bancroft usually ton common at around N cents up N cents under an extra $ N a share for 
+
+Sample 6: a day 's the end of the N range of stock prices had been <unk> over a wave of recent months and futures-related deals in N wrote and that they turn <unk> with a happy 
+
+Sample 7: believed to override what there is little complex of <unk> as well as the <unk> second of the rule on recessions for an array of wife stephen <unk> contractors to play as <unk> fixed-rate of 
+
+Sample 8: him to be <unk> by was an exceptionally supercomputer that chairs earns in N in what the system would be sought by the best corners to name new technology relations to determine if a person 
+
+Sample 9: prediction to <unk> the number of promoting junk bonds and quickly the same way which 's a deductible date has set aside together from some two million claims or macmillan positions by the company 's 
+
+Sample 10: harder to <unk> a woman for most liquid <unk> the pro-democracy water bullion is in the u.s. market for another kind of a nightmare a <unk> was foot to the <unk> defense establishment <unk> <unk>
+
+#######################################################################
+
+GRU (--seq_len=70):
+Sample 1: france 's leading and allied products says malcolm directors president of <unk> companies inc. who manages a broker from new england in N to N pennsylvania ministry in pittsburgh after the second quarter in the u.s. rogers is considered busy increases after newspapers with sec president and <unk> chief executive of a washington-based brokerage firm in expanding ohio first N N of the first six months of six up a 
+
+Sample 2: the difference of shares that is withdrawn on the u.s. floor it according to several data sheets gathering prudential motors corp. 's N N and <unk> energy workstations in N for the glamorous bank period depending for four years brand safer and other evaluation like <unk> than <unk> preferences against them and rejected a <unk> mortgages means he said the taiwanese pitches on the pacific plans were for discussing the 
+
+Sample 3: prominent cleaning up <unk> 's <unk> on eastern troubles in the horn of the south <unk> and to the national institutes of south africa and the pentagon of the state of the insiders n't <unk> in an <unk> <unk> and spur financial areas to lure it barriers to the state and a <unk> central <unk> given the politburo leaders also have to outperform the civil activists to seize the khmer 
+
+Sample 4: color equipment and possibly investment practices of or a guide for corporate agents and abuse from the management 's official said that the associations has established on growing reports of <unk> and thousands of the a decision of <unk> offerings for the united states as a whole view in the washington and the department for the decision for new products not the third of the <unk> ' <unk> known program 
+
+Sample 5: that had a number of studies questioned the computer 's financial problem as a result is because of <unk> does n't violate a major <unk> or time when in the <unk> 's term mr. <unk> says she did n't have <unk> the suit during <unk> ii immediately and way saved by prudential the department for federal transportation accounts in the meantime that is n't particularly busy licenses in trade <unk> 
+
+Sample 6: risk of <unk> trading systems corp. a unit of <unk> co. a unit for design in houston such as <unk> chain and <unk> give seagram to fly a management item as a senior vice president of southmark industries inc. a unit of <unk> <unk> ltd. a subsidiary of itt corp quotron and ltd will be a <unk> <unk> by institutes of health data co that the new negotiations say his 
+
+Sample 7: to be executed soon was no more than naturally criticized though these of garratt bad fears would be introduced to the transition of a two-tier industry experts said it could decrease its remarks but hotel monetary rates recognizes a <unk> market purchase in the first few months that will boost the costs of N N to suburban guilders about N N of the aircraft well in the 1990s will be 
+
+Sample 8: the most active thing of two assets ended it that would be permitted for the major money only in us for the first period of the third quarter of 1980s in in a year mr. <unk> said that though analysts want the encouragement and a strike war the <unk> for the a master or in <unk> wo n't be able to improve the impact of their annual inflation increase it 
+
+Sample 9: you think that 's the ability to get a wave of planes the <unk> wants to do the stupid with me on the pit says christopher <unk> builds of the <unk> association of the city of sport mr. bernstein said referring to a <unk> <unk> over the N N of taking for a gain from researchers and otc business in the u.s. that those capital <unk> consultants are improvement by 
+
+Sample 10: now led by the iafp by the bank of <unk> ferguson in N to monitor the losses of $ N million in the <unk> bank for asset a subsidiary of new zealand and reported that of federal agencies in march N both documents had been controlled by dr. cela a <unk> list of averaged N N of the high-risk the bank 's shares that a coleman <unk> has consented fro
