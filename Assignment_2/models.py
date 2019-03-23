@@ -216,7 +216,7 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
     return logits.view(self.seq_len, self.batch_size, self.vocab_size), hidden
 
 
-  def generate(self, inputs, hidden, generated_seq_len):
+  def generate(self, inputs, hidden, generated_seq_len, id_2_word):
     # TODO ========================
     # Compute the forward pass, as in the self.forward method (above).
     # You'll probably want to copy substantial portions of that code here.
@@ -241,24 +241,26 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
         - Sampled sequences of tokens
                     shape: (generated_seq_len, batch_size)
     """
-    samples = torch.zeros([generated_seq_len, self.batch_size], dtype=hidden.dtype, device=hidden.device)
-
-    init_emb = self.embedding(inputs) # shape: (self.batch_size, self.emb_size)
-    outp = self.inp_dp(init_emb)
-
-    for i in range(generated_seq_len):
+    samples = torch.zeros([generated_seq_len, self.batch_size], dtype=torch.long, device=hidden.device)
+    samples[0] = inputs
+    
+    outp = self.embedding(inputs) # shape: (self.batch_size, self.emb_size)
+    for i in range(1,generated_seq_len):
       for j in range(self.num_layers):
         inp = self.inp_dp(outp) if j==0 else outp
         hid = hidden[j]
         outp, hidden[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
 
       outp = self.Wy(outp) 
-      outp = F.softmax(outp, axis=1)      # shape (self.batch_size, self.vocab_size)
-      #outp = torch.max(outp, axis=1)[1]       # shape (self.batch_size)
-      outp = Categorical(probs=outp).sample() # shape (self.batch_size)
-      samples[i] = outp                       # store generated samples
-      outp = self.embedding(outp)             # convert sample into embedding as next input
-
+      dist = F.softmax(outp, dim=1)             # shape (self.batch_size, self.vocab_size)
+      for k in range(dist.size(0)):
+        while True:
+          s = Categorical(dist[k]).sample()
+          if id_2_word[s.item()] != '<eos>':
+            break
+        samples[i,k] = s
+      outp = self.embedding(samples[i]) 
+    
     return samples
 
 
@@ -454,7 +456,7 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
     return logits.view(self.seq_len, self.batch_size, self.vocab_size), hidden
 
 
-  def generate(self, inputs, hidden, generated_seq_len):
+  def generate(self, inputs, hidden, generated_seq_len, id_2_word):
     # TODO ========================
     # Compute the forward pass, as in the self.forward method (above).
     # You'll probably want to copy substantial portions of that code here.
@@ -479,24 +481,26 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
         - Sampled sequences of tokens
                     shape: (generated_seq_len, batch_size)
     """
-    samples = torch.zeros([generated_seq_len, self.batch_size], dtype=hidden.dtype, device=hidden.device)
-
-    init_emb = self.embedding(inputs) # shape: (self.batch_size, self.emb_size)
-    outp = self.inp_dp(init_emb)
-
-    for i in range(generated_seq_len):
+    samples = torch.zeros([generated_seq_len, self.batch_size], dtype=torch.long, device=hidden.device)
+    samples[0] = inputs
+    
+    outp = self.embedding(inputs) # shape: (self.batch_size, self.emb_size)
+    for i in range(1,generated_seq_len):
       for j in range(self.num_layers):
         inp = self.inp_dp(outp) if j==0 else outp
         hid = hidden[j]
         outp, hidden[j] = self.model[j](inp = inp.clone(), hidden = hid.clone())
 
-      outp = self.Wy(outp) 
-      outp = F.softmax(outp, axis=1)      # shape (self.batch_size, self.vocab_size)
-      #outp = torch.max(outp, axis=1)[1]       # shape (self.batch_size)
-      outp = Categorical(probs=outp).sample() # shape (self.batch_size)
-      samples[i] = outp                       # store generated samples
-      outp = self.embedding(outp)             # convert sample into embedding as next input
-
+      outp = self.Wy(outp)
+      dist = F.softmax(outp, dim=1)             # shape (self.batch_size, self.vocab_size)
+      for k in range(dist.size(0)):
+        while True:
+          s = Categorical(dist[k]).sample()
+          if id_2_word[s.item()] != '<eos>':
+            break
+        samples[i,k] = s
+      outp = self.embedding(samples[i])
+    
     return samples
 
 ##############################################################################
