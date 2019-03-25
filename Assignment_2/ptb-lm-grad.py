@@ -251,8 +251,7 @@ def run_epoch(model, data):
         time_steps, hidden_list = tuple(zip(*hidden_list))
         hidden_norm = [torch.norm(h.grad).item() for h in hidden_list]
         time_steps, hidden_norm = np.array(time_steps), np.array(hidden_norm)
-        #hidden_norm = hidden_norm - np.amin(hidden_norm)
-        #hidden_norm = hidden_norm / np.amax(hidden_norm)
+        hidden_norm = hidden_norm / np.amax(hidden_norm)
         return time_steps, hidden_norm
 
 ###############################################################################
@@ -289,4 +288,4 @@ plt.xlabel('Time Step')
 plt.ylabel('Grad Norm')
 plt.title('Hidden State Gradient Norm wrt the Final Time-Step')
 plt.legend()
-plt.savefig('5_2_figure')
+plt.savefig('5_2_figure_rescaled')
