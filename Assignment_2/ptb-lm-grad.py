@@ -83,6 +83,7 @@ import time
 import collections
 import os
 import sys
+import pickle
 import torch
 import torch.nn
 from torch.autograd import Variable
@@ -260,6 +261,7 @@ def run_epoch(model, data):
 #
 ###############################################################################
 # RUN MODEL ON TRAINING DATA
+dct = {}
 for args in [{'model': 'RNN', 'emb_size': 200, 'hidden_size': 1500, 'seq_len': 35, 'batch_size': 20, 'num_layers': 1, 'dp_keep_prob': 0.35}, 
              {'model': 'GRU', 'emb_size': 200, 'hidden_size': 1500, 'seq_len': 35, 'batch_size': 20, 'num_layers': 1, 'dp_keep_prob': 0.35}]:
     if args['model'] == 'RNN':
@@ -283,9 +285,17 @@ for args in [{'model': 'RNN', 'emb_size': 200, 'hidden_size': 1500, 'seq_len': 3
         
     time_steps, hidden_norm = run_epoch(model, train_data)
     plt.plot(time_steps, hidden_norm, label=args['model'])
+    
+    dct[args['model']] = {
+            'time_steps': time_steps,
+            'hidden_norm': hidden_norm
+    }
 
 plt.xlabel('Time Step')
 plt.ylabel('Grad Norm')
 plt.title('Hidden State Gradient Norm wrt the Final Time-Step')
 plt.legend()
 plt.savefig('5_2_figure_rescaled')
+
+with open('5_2_data_rescaled.pickle', 'wb') as f:
+    pickle.dump(dct, f)
