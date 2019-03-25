@@ -58,3 +58,16 @@ python ptb-lm-val_loss_by_t.py --model=TRANSFORMER --optimizer=SGD_LR_SCHEDULE -
 
 ## GRU
 python ptb-lm-val_loss_by_t.py --model=GRU --optimizer=SGD_LR_SCHEDULE --initial_lr=10 --batch_size=20 --seq_len=35 --hidden_size=1500 --num_layers=2 --dp_keep_prob=0.35 --evaluate --model_path=4_1/GRU_SGD_LR_SCHEDULE_model=GRU_optimizer=SGD_LR_SCHEDULE_initial_lr=10_batch_size=20_seq_len=35_hidden_size=1500_num_layers=2_dp_keep_prob=0.35_save_best_0/best_params.pt --save_dir=5_1/
+
+############## 5.2 #########################
+python3 ptb-lm-grad.py
+
+############## 5.3 #########################
+python3 ptb-lm-sample.py --model=RNN --optimizer=ADAM --initial_lr=0.0001 --batch_size=10 --seq_len=35 --hidden_size=1500 --num_layers=2 --dp_keep_prob=0.35 --resume 4_1/RNN_ADAM_model=RNN_optimizer=ADAM_initial_lr=0.0001_batch_size=20_seq_len=35_hidden_size=1500_num_layers=2_dp_keep_prob=0.35_save_best_0/best_params.pt --sample
+
+python3 ptb-lm-sample.py --model=RNN --optimizer=ADAM --initial_lr=0.0001 --batch_size=10 --seq_len=70 --hidden_size=1500 --num_layers=2 --dp_keep_prob=0.35 --resume 4_1/RNN_ADAM_model=RNN_optimizer=ADAM_initial_lr=0.0001_batch_size=20_seq_len=35_hidden_size=1500_num_layers=2_dp_keep_prob=0.35_save_best_0/best_params.pt --sample
+
+python3 ptb-lm-sample.py --model=GRU --optimizer=SGD_LR_SCHEDULE --initial_lr=10 --batch_size=10 --seq_len=35 --hidden_size=1500 --num_layers=2 --dp_keep_prob=0.35 --resume 4_1/GRU_SGD_LR_SCHEDULE_model=GRU_optimizer=SGD_LR_SCHEDULE_initial_lr=10_batch_size=20_seq_len=35_hidden_size=1500_num_layers=2_dp_keep_prob=0.35_save_best_0/best_params.pt --sample
+
+python3 ptb-lm-sample.py --model=GRU --optimizer=SGD_LR_SCHEDULE --initial_lr=10 --batch_size=10 --seq_len=70 --hidden_size=1500 --num_layers=2 --dp_keep_prob=0.35 --resume 4_1/GRU_SGD_LR_SCHEDULE_model=GRU_optimizer=SGD_LR_SCHEDULE_initial_lr=10_batch_size=20_seq_len=35_hidden_size=1500_num_layers=2_dp_keep_prob=0.35_save_best_0/best_params.pt --sample
+
