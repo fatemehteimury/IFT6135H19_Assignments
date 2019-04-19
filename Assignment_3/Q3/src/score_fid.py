@@ -6,6 +6,7 @@ import torch
 import classify_svhn
 from classify_svhn import Classifier
 import numpy as np
+import scipy
 
 SVHN_PATH = "../SVHN_dataset"
 PROCESS_BATCH_SIZE = 32
@@ -89,19 +90,10 @@ def calculate_fid_score(sample_feature_iterator, testset_feature_iterator, sampl
     for i in range(exam_len):
         all_testset_features[i,:] = next(testset_feature_iterator)
  
-    print(all_sample_features.min())
-    print(all_sample_features.max())
-    print(all_testset_features.min())
-    print(all_testset_features.max())
     # calculate mu and sigma for samples and testset
     mu_s = np.mean(all_sample_features, axis=0) 
     mu_t = np.mean(all_testset_features, axis=0) 
-    
-    print("mu_s:", mu_s[0:10])
-    print("mu_t:", mu_t[0:10])
-
-    print("mu_s - mu_t:", (mu_s - mu_t)[0:10])
-    
+        
     sigma_s = np.cov(all_sample_features, rowvar=False)
     sigma_t = np.cov(all_testset_features, rowvar=False)
 
@@ -118,30 +110,24 @@ def calculate_fid_score(sample_feature_iterator, testset_feature_iterator, sampl
     print("trace_t: ", trace_t)
 
     # calculate trace of sqrt of sigma product
-    # ref: https://github.com/tensorflow/tensorflow/blob/r1.13/tensorflow/contrib/gan/python/eval/python/classifier_metrics_impl.py#L411
-    #
-    # Trace(sqrt(sigma_s sigma_t)) = sum(eigenvalues(sqrt(sigma_s sigma_t)))
-    #                              = sum(sqrt(eigenvalues(A A B B)))       where, A = sqrt(sigma_s) and B = sqrt(sigma_t)
-    #                              = sum(sqrt(eigenvalues(A B B A)))
-    #                              = sum(eigenvalues(sqrt(A B B A)))
-    #                              = Trace(sqrt(A B B A))
-    #                              = Trace(sqrt(A sigma_t A))
-    # 
-    # A  = sqrt(sigma_s)
-    #    = sqrt(U*diag(S)*Vh)
-    #    = U * diag(sqrt(S)) * Vh
 
-    u, s, vh = np.linalg.svd(sigma_s, full_matrices=True)
-    si = np.where(np.less(s, 1e-10), s, np.sqrt(s))
-    sqrt_sigma_s =  np.matmul(u, np.matmul(np.diag(si), vh))
+    sigma_s_sigma_t = np.matmul(sigma_s, sigma_t)    
 
-    sqrt_sigma_s_sigma_t_sqrt_sigma_s = np.matmul(sqrt_sigma_s, np.matmul(sigma_t, sqrt_sigma_s)) 
+    # square root by diagonalization
+    # diagonalization by using eigendecomposition
+    w, v = np.linalg.eig(sigma_s_sigma_t)
     
-    u, s, vh = np.linalg.svd(sqrt_sigma_s_sigma_t_sqrt_sigma_s, full_matrices=True)
-    si = np.where(np.less(s, 1e-10), s, np.sqrt(s))
-    sqrt_sigma_s_sigma_t =  np.matmul(u, np.matmul(np.diag(si), vh))
+    vi = np.linalg.inv(v)
 
-    trace_p = np.trace(sqrt_sigma_s_sigma_t)
+    # square root becomes unstable near zero    
+    w_S = np.sqrt(w, where=np.greater(w, 1e-10))
+
+    # reconstruction of square_root_
+    sqrt_sigma_s_sigma_t = np.matmul(np.matmul(v, np.diag(w_S)), vi)
+
+    # trace of square root 
+    trace_p = np.trace(sqrt_sigma_s_sigma_t) 
+
     print("trace_p: ", trace_p)
 
     fid_score = mu + trace_s + trace_t - 2*trace_p

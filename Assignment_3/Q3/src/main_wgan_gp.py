@@ -182,24 +182,25 @@ def calc_gradient_penalty(real_d, fake_d):
     interpolates = interpolates.to(device)
     interpolates.requires_grad = True
 
-    # Calculate probability of interpolated examples
-    prob_interpolates = D(interpolates)
+    # Calculate output of interpolated examples
+    out_interpolates = D(interpolates)
 
-    # Calculate gradients of probabilities with respect to examples
-    gradients = autograd.grad(outputs=prob_interpolates, inputs=interpolates,
-                              grad_outputs=torch.ones(prob_interpolates.size()).to(device),
+    # Calculate gradients of output with respect to input
+    gradients = autograd.grad(outputs=out_interpolates, inputs=interpolates,
+                              grad_outputs=torch.ones(out_interpolates.size()).to(device),
                               create_graph=True, retain_graph=True, only_inputs=True)[0]
 
+    print(gradients.shape)
     # # Gradients have shape (batch_size, num_channels, img_width, img_height),
     # # so flatten to easily take norm per example in batch
     gradients = gradients.view(args.batchSize, -1)
 
     # Derivatives of the gradient close to 0 can cause problems because of
     # the square root, so manually calculate norm and add epsilon
-    gradients_norm = torch.sqrt(torch.sum(gradients ** 2, dim=1) + 1e-12)
-    gradient_penalty = args.GP_lambda * ((gradients_norm - 1) ** 2).mean()
+    # gradients_norm = torch.sqrt(torch.sum(gradients ** 2, dim=1) + 1e-12)
+    # gradient_penalty = args.GP_lambda * ((gradients_norm - 1) ** 2).mean()
 
-    # gradient_penalty = args.GP_lambda * ((gradients.norm(2, dim=1) - 1) ** 2).mean()
+    gradient_penalty = args.GP_lambda * ((gradients.norm(2, dim=1) - 1) ** 2).mean()
 
     return gradient_penalty
 
