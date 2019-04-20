@@ -112,16 +112,22 @@ def calculate_fid_score(sample_feature_iterator, testset_feature_iterator, sampl
     # calculate trace of sqrt of sigma product
     sigma_s_sigma_t = np.matmul(sigma_s, sigma_t)    
 
-    # square root by diagonalization
-    # diagonalization using eigen-decomposition
-    eigenvalues, eigenvectors = np.linalg.eig(sigma_s_sigma_t)
-    eigenvectors_inv = np.linalg.inv(eigenvectors)
+    sqrt_sigma_s_sigma_t, _ = scipy.linalg.sqrtm(sigma_s_sigma_t, disp = False)
 
-    # square root becomes unstable near zero    
-    eigenvalues_sqrt = np.sqrt(eigenvalues, where=np.greater(eigenvalues, 1e-10))
+    # sometimes this results matrix with imagnary part
+    # take only real value of it
+    sqrt_sigma_s_sigma_t =sqrt_sigma_s_sigma_t.real 
 
-    # reconstruction of square_root_
-    sqrt_sigma_s_sigma_t = np.matmul(np.matmul(eigenvectors, np.diag(eigenvalues_sqrt)), eigenvectors_inv)
+    # # square root by diagonalization
+    # # diagonalization using eigen-decomposition
+    # eigenvalues, eigenvectors = np.linalg.eig(sigma_s_sigma_t)
+    # eigenvectors_inv = np.linalg.inv(eigenvectors)
+
+    # # square root becomes unstable near zero    
+    # eigenvalues_sqrt = np.sqrt(eigenvalues, where=np.greater(eigenvalues, 1e-10))
+
+    # # reconstruction of square_root_
+    # sqrt_sigma_s_sigma_t = np.matmul(np.matmul(eigenvectors, np.diag(eigenvalues_sqrt)), eigenvectors_inv)
 
     # trace of square root 
     trace_p = np.trace(sqrt_sigma_s_sigma_t) 
