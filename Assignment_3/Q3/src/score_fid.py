@@ -110,20 +110,18 @@ def calculate_fid_score(sample_feature_iterator, testset_feature_iterator, sampl
     print("trace_t: ", trace_t)
 
     # calculate trace of sqrt of sigma product
-
     sigma_s_sigma_t = np.matmul(sigma_s, sigma_t)    
 
     # square root by diagonalization
-    # diagonalization by using eigendecomposition
-    w, v = np.linalg.eig(sigma_s_sigma_t)
-    
-    vi = np.linalg.inv(v)
+    # diagonalization using eigen-decomposition
+    eigenvalues, eigenvectors = np.linalg.eig(sigma_s_sigma_t)
+    eigenvectors_inv = np.linalg.inv(eigenvectors)
 
     # square root becomes unstable near zero    
-    w_S = np.sqrt(w, where=np.greater(w, 1e-10))
+    eigenvalues_sqrt = np.sqrt(eigenvalues, where=np.greater(eigenvalues, 1e-10))
 
     # reconstruction of square_root_
-    sqrt_sigma_s_sigma_t = np.matmul(np.matmul(v, np.diag(w_S)), vi)
+    sqrt_sigma_s_sigma_t = np.matmul(np.matmul(eigenvectors, np.diag(eigenvalues_sqrt)), eigenvectors_inv)
 
     # trace of square root 
     trace_p = np.trace(sqrt_sigma_s_sigma_t) 
@@ -164,3 +162,4 @@ if __name__ == "__main__":
 
     fid_score = calculate_fid_score(sample_f, test_f, len(sample_loader.dataset), len(test_loader.dataset))
     print("FID score:", fid_score)
+    print("\n\n\n\n")

@@ -131,7 +131,7 @@ class Encoder(nn.Module):
             # state size. (ngf*4) x 4 x 4
 
             nn.Conv2d(ngf*4, ngf*8, kernel_size=3, padding=1),
-            # nn.BatchNorm2d(ngf * 8),
+            nn.BatchNorm2d(ngf * 8),
             nn.ELU(),
             nn.Dropout2d(p=0.1),
             # state size. (ngf*8) x 4 x 4
