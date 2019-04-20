@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-
+import torch.nn.functional as F
 ############################################################
 #
 # define generators, discriminator, encoder, and VAE
@@ -8,9 +8,10 @@ import torch.nn as nn
 ############################################################
 
 class Generator(nn.Module):
-    def __init__(self, ngf, nz):
+    def __init__(self, ngf, nz, normalize=True):
         super(Generator, self).__init__()
         self.ngf = ngf
+        self.normalize = normalize
 
         self.linear_stack = nn.Sequential(
             # input is Z, going into Linear
@@ -43,8 +44,6 @@ class Generator(nn.Module):
             # state size. (ngf*1) x 30 x 30
 
             nn.Conv2d(ngf*1,     3, kernel_size=3, padding=2),
-            nn.Sigmoid(),
-            # nn.Tanh(),
             # state size.       3 x 32 x 32
             )
 
@@ -52,6 +51,7 @@ class Generator(nn.Module):
         # x.size = bs x nz
         x = self.linear_stack(x)
         output = self.conv_stack(x.view(-1, self.ngf*8, 4, 4))
+        output = torch.tanh(output) if self.normalize else torch.sigmoid(output)
         # state size. bs x 3 x 32 x 32
         return output
 
@@ -153,9 +153,9 @@ class DCGenerator(nn.Module):
     """
     Inspired by: https://github.com/pytorch/examples/tree/master/dcgan
     """
-    def __init__(self, ngf, nz):
+    def __init__(self, ngf, nz, normalize=True):
         super(DCGenerator, self).__init__()
-
+        self.normalize = normalize
         self.main = nn.Sequential(
             # input is Z, going into a convolution
 
@@ -175,14 +175,13 @@ class DCGenerator(nn.Module):
             # state size. (ngf*2) x 16 x 16
 
             nn.ConvTranspose2d( ngf * 2,       3, 4, 2, 1, bias=False),
-            nn.Sigmoid(),
-            # nn.Tanh(),
             # state size. 3 x 32 x 32
         )
 
     def forward(self, x):
         # x.size = bs x nz
         output = self.main(x.view(x.shape[0],x.shape[1],1,1))
+        output = torch.tanh(output) if self.normalize else torch.sigmoid(output)
         # state size. bs x 3 x 32 x 32
         return output
 
@@ -269,11 +268,11 @@ class DCEncoder(nn.Module):
 
 class VAE(nn.Module):
     
-    def __init__(self, ngf, nz, generator_type='DCGAN'):
+    def __init__(self, ngf, nz, generator_type='DCGAN', normalize=True):
         super(VAE, self).__init__()
 
         self.encoder = DCEncoder(ngf, nz) if generator_type=='DCGAN' else Encoder(ngf, nz)
-        self.decoder = DCGenerator(ngf, nz) if generator_type=='DCGAN' else Generator(ngf, nz)
+        self.decoder = DCGenerator(ngf, nz, normalize) if generator_type=='DCGAN' else Generator(ngf, nz, normalize)
 
     def forward(self, x):
         z, mu, logvar = self.encoder(x)

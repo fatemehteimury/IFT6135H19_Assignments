@@ -57,16 +57,16 @@ parser.add_argument('--beta1', type=float, default=0.5,
                     help='beta1 for adam. Default: 0.5')
 parser.add_argument('--cuda', type=int, default=-1,
                     help='GPU number (0,1,2,..). Default: -1 i.e. CPU')
-parser.add_argument('--outf', default='../Experiments',
+parser.add_argument('--outf', default='../Experiments_1',
                     help='folder to output images and model checkpoints. Default: ../Experiments')
 parser.add_argument('--exp_name', default='WGAN_GP',
                     help='Name (identifier) of Experiment. Default: WGAN_GP')
 parser.add_argument('--seed', type=int, default=1111,
                     help='random seed. Default: 1111')
-parser.add_argument('--sample', type=int, default=0,
-                    help='If True(1) will generate samples from pre-trained model. Default:0')
+parser.add_argument('--sample', action='store_true',
+                    help='Enables generation of samples from pre-trained model')
 parser.add_argument('--normalize', action='store_true', 
-                    help='enables normalization of samples')
+                    help='enables normalization of samples between -1 to 1 otherwise samples are between 0 to 1')
 
 args = parser.parse_args()
 argsdict = args.__dict__
@@ -118,7 +118,7 @@ torch.manual_seed(args.seed)
 #
 ############################################################################
 
-G = DCGenerator(args.ngf, args.nz) if args.generator_type=='DCGAN' else Generator(args.ngf, args.nz)
+G = DCGenerator(args.ngf, args.nz, args.normalize) if args.generator_type=='DCGAN' else Generator(args.ngf, args.nz, args.normalize)
 D = DCDiscriminator(args.ndf) if args.generator_type=='DCGAN' else Discriminator(args.ndf) 
 
 print("===> Generator and Discriminator Defined")
@@ -186,19 +186,11 @@ def calc_gradient_penalty(real_d, fake_d):
     out_interpolates = D(interpolates)
 
     # Calculate gradients of output with respect to input
-    gradients = autograd.grad(outputs=out_interpolates, inputs=interpolates,
-                              grad_outputs=torch.ones(out_interpolates.size()).to(device),
-                              create_graph=True, retain_graph=True, only_inputs=True)[0]
+    # https://github.com/CW-Huang/welcome_tutorials/blob/master/pytorch/2.%20Autograd.ipynb
+    gradients = autograd.grad(out_interpolates, interpolates, grad_outputs=torch.ones(out_interpolates.size()).to(device), create_graph=True)[0]
 
-    print(gradients.shape)
-    # # Gradients have shape (batch_size, num_channels, img_width, img_height),
-    # # so flatten to easily take norm per example in batch
+    # Gradients have shape (args.batchSize, 3, 32, 32), so flattent it to (args.batchSize, 3*32*32)
     gradients = gradients.view(args.batchSize, -1)
-
-    # Derivatives of the gradient close to 0 can cause problems because of
-    # the square root, so manually calculate norm and add epsilon
-    # gradients_norm = torch.sqrt(torch.sum(gradients ** 2, dim=1) + 1e-12)
-    # gradient_penalty = args.GP_lambda * ((gradients_norm - 1) ** 2).mean()
 
     gradient_penalty = args.GP_lambda * ((gradients.norm(2, dim=1) - 1) ** 2).mean()
 
@@ -339,8 +331,11 @@ def test(epoch, data_loader):
             metric += np.array([errG, errD, errD_fake.item(), - errD_real.item(), 0.0])
         
             if iteration%frq==0:
-                vutils.save_image(real_input, '{}/{}_real_samples.png'.format(save_path,str(iteration)), normalize=args.normalize, scale_each=args.normalize)
-                vutils.save_image(fake_input.detach(), '{}/{}_fake_samples.png'.format(save_path,str(iteration)), normalize=args.normalize, scale_each=args.normalize)
+                if args.normalize: 
+                    real_input = (0.5*real_input) + 0.5
+                    fake_input = (0.5*fake_input) + 0.5
+                vutils.save_image(real_input, '{}/{}_real_samples.png'.format(save_path,str(iteration)), normalize=False, scale_each=False)
+                vutils.save_image(fake_input.detach(), '{}/{}_fake_samples.png'.format(save_path,str(iteration)), normalize=False, scale_each=False)
 
     return metric/len(data_loader)
 
@@ -375,7 +370,7 @@ if not args.sample:
         print("===> Checkpoint saved")
 
         end = time.time()
-        print("===> Epoch:{} Completed in {:.4f} seconds".format(epch, end-start))
+        print("===> Epoch:{} Completed in {:.4f} seconds \n\n\n".format(epch, end-start))
 
 else:
     if args.init_epoch == 0:
@@ -411,8 +406,12 @@ else:
                 z_t = G(t).detach()
                 z = torch.cat([z, z_t.clone()])
 
-            vutils.save_image(x, '{}/x_interpolation_samples.png'.format(sample_path), normalize=args.normalize, scale_each=args.normalize, nrow=args.batchSize)
-            vutils.save_image(z, '{}/z_interpolation_samples.png'.format(sample_path), normalize=args.normalize, scale_each=args.normalize, nrow=args.batchSize)
+            if args.normalize:
+                x = (x*0.5) + 0.5
+                z = (z*0.5) + 0.5
+
+            vutils.save_image(x, '{}/x_interpolation_samples.png'.format(sample_path), normalize=False, scale_each=False, nrow=args.batchSize)
+            vutils.save_image(z, '{}/z_interpolation_samples.png'.format(sample_path), normalize=False, scale_each=False, nrow=args.batchSize)
 
             print('===> Interpolation in Z and X space saved')
 
@@ -436,7 +435,11 @@ else:
                 y_m_e = G(w_m_e).detach()
 
                 img = torch.cat([y_m_e.clone(), y.clone(), y_p_e.clone()])
-                vutils.save_image(img, '{}/z_perturbation_samples_dim_{}.png'.format(sample_path, str(i)), normalize=args.normalize, scale_each=args.normalize, nrow=args.batchSize)
+    
+                if args.normalize:
+                    img = (img*0.5) + 0.5
+
+                vutils.save_image(img, '{}/z_perturbation_samples_dim_{}.png'.format(sample_path, str(i)), normalize=False, scale_each=False, nrow=args.batchSize)
 
             print('===> Perturbations in Z space saved')
 
@@ -449,8 +452,11 @@ else:
                 w = torch.randn(args.batchSize, args.nz, device=device)
                 y = G(w).detach()
 
+                if args.normalize:
+                    y = (y*0.5) + 0.5
+
                 for j in range(args.batchSize):
-                    vutils.save_image(y[j:j+1,:,:,:], '{}/samples_{}.png'.format(ind_sample_path, str(sample_counts)), normalize=args.normalize, scale_each=args.normalize, nrow=1, padding=0)
+                    vutils.save_image(y[j:j+1,:,:,:], '{}/samples_{}.png'.format(ind_sample_path, str(sample_counts)), normalize=False, scale_each=False, nrow=1, padding=0)
                     sample_counts += 1
 
             print('===> Samples for FID saved \n\n\n')
